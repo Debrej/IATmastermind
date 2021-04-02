@@ -51,6 +51,17 @@ def fitness(c, solutionsJouees, scoreReel):
         fit += eval(c,solution, scoreReel)
     return fit/len(solutionsJouees)
 
+def mutation(c):
+    while(True):
+        mute = random.randrange(8)
+        position = random.randrange(4)
+        if(c[position] != mute):
+            c[position] = mute
+            return c
+
+def croisement(c1, c2):
+    return [c1[0], c2[1], c1[2], c2[3]]
+
 def extractFitness(s):
     return s[1]
 
