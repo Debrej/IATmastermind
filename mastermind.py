@@ -1,7 +1,15 @@
+import random
 COEF_P = 2
 COEF_M = 1
 CS = [1,3,7,7]
 solutionsJouees = []
+
+def createSol():
+    sol = []
+    for i in range(4):
+        sol.append(random.randrange(8))
+    return sol
+
 
 def score(p,m):
     return COEF_P*p+COEF_M*m
@@ -40,3 +48,5 @@ def fitness(c):
 if __name__ == "__main__":
   (p,m) = compare(CS, [1,4,7,3])
   print(f'score de (1,4,7,3) : {score(p,m)}')
+  s = createSol()
+  print(s)
