@@ -1,8 +1,9 @@
 import random
-COEF_P = 2
+COEF_P = 4
 COEF_M = 1
-CS = [1,3,7,7]
-solutionsJouees = []
+SCORE_MAX = 4 * COEF_P
+LIMITE_TOUR = 300
+POPULATION = 150
 
 def createSol():
     sol = []
@@ -47,17 +48,17 @@ def eval(c, cj, scoreReel):
 def fitness(c, solutionsJouees, scoreReel):
     fit = 0
     for j, solution in enumerate(solutionsJouees):
-        print()
         fit += eval(c,solution, scoreReel)
     return fit/len(solutionsJouees)
 
-def mutation(c):
+def mutation(sol):
+    c = sol[0]
     while(True):
         mute = random.randrange(8)
         position = random.randrange(4)
         if(c[position] != mute):
             c[position] = mute
-            return c
+            return [c, -1]
 
 def croisement(c1, c2):
     return [c1[0], c2[1], c1[2], c2[3]]
@@ -69,6 +70,7 @@ if __name__ == "__main__":
     # Creation de la solution
     CS = createSol()
     print(f'Solution : {CS}')
+    solutionTrouvee = False
 
     # Creation de la solution initiale
     CI = createSol()
@@ -79,16 +81,56 @@ if __name__ == "__main__":
     solutionsJouees = [CI]
 
     # Création de la population
-    pop = createPop(4)
+    pop = createPop(POPULATION)
 
-    # Evaluation
-    for i in range(len(pop)):
-        pop[i][1] = fitness(pop[i][0], solutionsJouees, scoreReel)
+    k = 0
 
-    # Classement des meilleures solutions
-    pop.sort(key=extractFitness)
-    print(f'Population : {pop}')
+    while not solutionTrouvee and k < LIMITE_TOUR:
+        # Evaluation
+        for i in range(len(pop)):
+            pop[i][1] = fitness(pop[i][0], solutionsJouees, scoreReel)
 
-    # Sélection de la solution à jouer
-    solutionAJouer = pop[0][0]
-    print(f'Solution à jouer {solutionAJouer}')
+        # Classement des meilleures solutions
+        pop.sort(key=extractFitness)
+
+        # Sélection de la solution à jouer
+        solutionAJouer = pop[0]
+
+        # Sélection des meilleurs 50%
+        bests = pop[0:int(len(pop)/2)]
+
+        # Mutation des meilleurs
+        mutated = list(map(mutation, bests))
+
+        # Croisement des meilleurs
+        crossbred = []
+        for i in range(len(mutated)):
+            if i+1 < len(mutated):
+                crossbred.append([croisement(mutated[i][0], mutated[i+1][0]), -1])
+            else:
+                crossbred.append([croisement(mutated[i][0], mutated[0][0]), -1])
+
+        # Remplacement de la population
+        pop = [*mutated, *crossbred]
+
+        # Réévaluation
+        for i in range(len(pop)):
+            pop[i][1] = fitness(pop[i][0], solutionsJouees, scoreReel)
+
+        # Classement des meilleures solutions
+        pop.sort(key=extractFitness)
+
+        # Sélection de la solution à jouer
+        solutionAJouer = pop[0]
+        
+        # Jeu de la solution choisie
+        scoreReel = score(*compare(CS, solutionAJouer[0]))
+        solutionsJouees.append(solutionAJouer[0])
+        solutionTrouvee = scoreReel == SCORE_MAX
+
+        k += 1
+    if solutionTrouvee:
+        print(f'Trouvé en {len(solutionsJouees)} tours')
+    else:
+        print(f'Pas trouvé la solution après {LIMITE_TOUR} tours')
+    print(f'Dernière solutions jouée : {solutionsJouees[-1:]}, solution : {CS}')
