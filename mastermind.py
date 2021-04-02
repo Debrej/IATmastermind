@@ -26,11 +26,9 @@ def compare(c1, c2):
             m+=1
     return (p,m)
 
-def eval(c, cj):
+def eval(c, cj, scoreReel):
     (pVirtuel, mVirtuel) = compare(c,cj)
     scoreVirtuel = score(pVirtuel, mVirtuel)
-    (pReel, mReel) = compare(CS, cj)
-    scoreReel = score(pReel, mReel)
     return scoreReel - scoreVirtuel
 
 def fitness(c):
