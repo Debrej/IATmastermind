@@ -50,8 +50,23 @@ def fitness(c):
         fit += eval(c,solution)
     return fit/len(solutionsJouees)
 
+def mutation(c):
+    while(True):
+        mute = random.randrange(8)
+        position = random.randrange(4)
+        if(c[position] != mute):
+            c[position] = mute
+            return c
+
+def croisement(c1, c2):
+    return [c1[0], c2[1], c1[2], c2[3]]
+
 if __name__ == "__main__":
   (p,m) = compare(CS, [1,4,7,3])
   print(f'score de (1,4,7,3) : {score(p,m)}')
   s = createSol()
   print(s)
+  s = mutation(s)
+  print(s)
+  s2 = croisement(s, [1,4,7,3])
+  print(s2)
