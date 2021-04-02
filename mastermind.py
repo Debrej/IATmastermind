@@ -13,7 +13,7 @@ def createSol():
 def createPop(taille_pop):
     pop = []
     for i in range(taille_pop):
-        pop.append(createSol)
+        pop.append([createSol(), -1])
     return pop
 
 def score(p,m):
@@ -42,16 +42,42 @@ def compare(c1, c2):
 def eval(c, cj, scoreReel):
     (pVirtuel, mVirtuel) = compare(c,cj)
     scoreVirtuel = score(pVirtuel, mVirtuel)
-    return scoreReel - scoreVirtuel
+    return abs(scoreReel - scoreVirtuel)
 
-def fitness(c):
+def fitness(c, solutionsJouees, scoreReel):
     fit = 0
     for j, solution in enumerate(solutionsJouees):
-        fit += eval(c,solution)
+        print()
+        fit += eval(c,solution, scoreReel)
     return fit/len(solutionsJouees)
 
+def extractFitness(s):
+    return s[1]
+
 if __name__ == "__main__":
-  (p,m) = compare(CS, [1,4,7,3])
-  print(f'score de (1,4,7,3) : {score(p,m)}')
-  s = createSol()
-  print(s)
+    # Creation de la solution
+    CS = createSol()
+    print(f'Solution : {CS}')
+
+    # Creation de la solution initiale
+    CI = createSol()
+    scoreReel = score(*compare(CS, CI))
+    print(f'Solution initiale : {CI}, score : {scoreReel}')
+
+    # Ajout de la solution aux solutions jouées
+    solutionsJouees = [CI]
+
+    # Création de la population
+    pop = createPop(4)
+
+    # Evaluation
+    for i in range(len(pop)):
+        pop[i][1] = fitness(pop[i][0], solutionsJouees, scoreReel)
+
+    # Classement des meilleures solutions
+    pop.sort(key=extractFitness)
+    print(f'Population : {pop}')
+
+    # Sélection de la solution à jouer
+    solutionAJouer = pop[0][0]
+    print(f'Solution à jouer {solutionAJouer}')
