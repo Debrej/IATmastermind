@@ -10,6 +10,11 @@ def createSol():
         sol.append(random.randrange(8))
     return sol
 
+def createPop(taille_pop):
+    pop = []
+    for i in range(taille_pop):
+        pop.append(createSol)
+    return pop
 
 def score(p,m):
     return COEF_P*p+COEF_M*m
