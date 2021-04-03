@@ -1,9 +1,9 @@
 import random
-COEF_P = 4
+COEF_P = 2
 COEF_M = 1
 SCORE_MAX = 4 * COEF_P
-LIMITE_TOUR = 300
-POPULATION = 150
+LIMITE_TOUR = 50
+POPULATION = 100
 
 def createSol():
     sol = []
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         pop.sort(key=extractFitness)
 
         # Sélection de la solution à jouer
-        solutionAJouer = pop[0]
+        # solutionAJouer = pop[0]
 
         # Sélection des meilleurs 50%
         bests = pop[0:int(len(pop)/2)]
@@ -122,6 +122,12 @@ if __name__ == "__main__":
 
         # Sélection de la solution à jouer
         solutionAJouer = pop[0]
+
+        if(solutionAJouer[1] > 2.5):
+            k+=1
+            continue
+
+        print(solutionAJouer[1])
         
         # Jeu de la solution choisie
         scoreReel = score(*compare(CS, solutionAJouer[0]))
