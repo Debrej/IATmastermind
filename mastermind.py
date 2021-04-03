@@ -1,9 +1,9 @@
 import random
-COEF_P = 2
+COEF_P = 4
 COEF_M = 1
 SCORE_MAX = 4 * COEF_P
 LIMITE_TOUR = 50
-POPULATION = 100
+POPULATION = 200
 
 def createSol():
     sol = []
@@ -48,7 +48,7 @@ def eval(c, cj, scoreReel):
 def fitness(c, solutionsJouees, scoreReel):
     fit = 0
     for j, solution in enumerate(solutionsJouees):
-        fit += eval(c,solution, scoreReel)
+        fit += eval(c, solution, scoreReel)
     return fit/len(solutionsJouees)
 
 def mutation(sol):
@@ -97,7 +97,13 @@ if __name__ == "__main__":
         # solutionAJouer = pop[0]
 
         # Sélection des meilleurs 50%
-        bests = pop[0:int(len(pop)/2)]
+        # bests = pop[0:int(len(pop)/2)]
+
+        # Sélection du meilleur et reste aléatoire
+        bests = []
+        bests.append(pop[0])
+        while(len(bests) < POPULATION):
+            bests.append(pop[random.randrange(len(pop))])
 
         # Mutation des meilleurs
         mutated = list(map(mutation, bests))
@@ -123,11 +129,11 @@ if __name__ == "__main__":
         # Sélection de la solution à jouer
         solutionAJouer = pop[0]
 
-        if(solutionAJouer[1] > 2.5):
+        if(solutionAJouer[1] > 3):
             k+=1
             continue
 
-        print(solutionAJouer[1])
+        print(solutionAJouer)
         
         # Jeu de la solution choisie
         scoreReel = score(*compare(CS, solutionAJouer[0]))
@@ -139,4 +145,4 @@ if __name__ == "__main__":
         print(f'Trouvé en {len(solutionsJouees)} tours')
     else:
         print(f'Pas trouvé la solution après {LIMITE_TOUR} tours')
-    print(f'Dernière solutions jouée : {solutionsJouees[-1:]}, solution : {CS}')
+    print(f'Dernière solution jouée : {solutionsJouees[-1:]}, solution : {CS}')
