@@ -83,7 +83,7 @@ def crossPop(pop):
     newPop = []
     newPop.append(pop[0])
     while(len(newPop) < POPULATION)
-        newPop.append(pop[random.randrange(POPULATION)][0], pop[random.randrange(POPULATION)][0])
+        newPop.append([croisement[pop[random.randrange(POPULATION)][0], pop[random.randrange(POPULATION)][0], -1])
     return newPop
 
 def extractFitness(s):
