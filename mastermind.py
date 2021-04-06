@@ -1,10 +1,11 @@
 import random
-COEF_P = 3
-COEF_M = 2
-TAUX_MUTATION = 3
+COEF_M = 1
+RATIO_M_P = 3
+COEF_P = COEF_M*RATIO_M_P
+TAUX_MUTATION = 5
 SCORE_MAX = 4 * COEF_P
-LIMITE_TOUR = 2
-POPULATION = 10
+LIMITE_TOUR = 20
+POPULATION = 50
 
 def createSol():
     sol = []
@@ -67,23 +68,23 @@ def mutation(sol):
 def mutePop(pop):
     newPop = []
     for i in range(len(pop)):
-        newPop.append(muation(pop[i]))
+        newPop.append(mutation(pop[i]))
     return newPop
 
 def croisement(c1, c2):
     chance = random.randrange(3)
-    if(chance = 0):
-        return(c1[0], c1[1], c1[2], c2[3])
-    if(chance = 1):
-        return(c1[0], c1[1], c2[2], c2[3])
-    if(chance = 2):
-        return(c1[0], c2[1], c2[2], c2[3])
+    if(chance == 0):
+        return([[c1[0], c1[1], c1[2], c2[3]], -1])
+    if(chance == 1):
+        return([[c1[0], c1[1], c2[2], c2[3]], -1])
+    if(chance == 2):
+        return([[c1[0], c2[1], c2[2], c2[3]],-1])
 
 def crossPop(pop):
     newPop = []
     newPop.append(pop[0])
-    while(len(newPop) < POPULATION)
-        newPop.append([croisement[pop[random.randrange(POPULATION)][0], pop[random.randrange(POPULATION)][0], -1])
+    while(len(newPop) < POPULATION):
+        newPop.append(croisement(pop[random.randrange(POPULATION/2)][0], pop[random.randrange(POPULATION/2)][0]))
     return newPop
 
 def extractFitness(s):
@@ -101,10 +102,13 @@ def selection(pop):
     sumFitness = sum(list(map(extractFitness, pop[1:])))
     maxFitness = extractFitness(max(pop[1:], key=extractFitness))
     weights = [(maxFitness - x[1])/(sumFitness) for x in pop[1:]]
-    bests.append(random.choices(pop[1:], weights=weights, k=int(len(pop[1:])/2)))
+    bests.extend(random.choices(pop[1:], weights=weights, k=int(len(pop[1:])/2)))
     return(bests)
 
 if __name__ == "__main__":
+
+    f = open("res.csv", "a+")
+
     # Creation de la solution
     CS = createSol()
     print(f'Solution : {CS}')
@@ -123,20 +127,29 @@ if __name__ == "__main__":
 
     k = 0
 
+    for i in range(len(pop)):
+            pop[i][1] = fitness(pop[i][0], solutionsJouees, scoreReel)
+
     while not solutionTrouvee and k < LIMITE_TOUR:
+        pop.sort(key=extractFitness)
+        pop = selection(pop)
+        pop.sort(key=extractFitness)
+        pop = crossPop(pop)
+        pop = mutePop(pop)
         # Evaluation
         for i in range(len(pop)):
             pop[i][1] = fitness(pop[i][0], solutionsJouees, scoreReel)
-
-        # Classement des meilleures solutions
         pop.sort(key=extractFitness)
+        solutionsJouees.append(pop[0][0])
+        print(f'solution proposée : {pop[0]}')
 
-        bests = selection(pop)
         k += 1
 
     if solutionTrouvee:
         print(f'Trouvé en {len(solutionsJouees)} tours')
+        f.write(f'{len(solutionsJouees)},{solutionsJouees[-1:]},true')
     else:
         print(f'Pas trouvé la solution après {LIMITE_TOUR} tours')
+        f.write(f'{len(solutionsJouees)},{solutionsJouees[-1:]},false')
     print(f'Dernière solution jouée : {solutionsJouees[-1:]}, solution : {CS}')
-    print(solutionsJouees)
+    f.close()
