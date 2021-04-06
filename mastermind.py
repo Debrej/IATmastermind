@@ -3,8 +3,8 @@ COEF_P = 3
 COEF_M = 2
 TAUX_MUTATION = 3
 SCORE_MAX = 4 * COEF_P
-LIMITE_TOUR = 50
-POPULATION = 100
+LIMITE_TOUR = 2
+POPULATION = 10
 
 def createSol():
     sol = []
@@ -95,6 +95,15 @@ def isEqual(c1, c2):
             return False
     return True
 
+def selection(pop):
+    bests = []
+    bests.append(pop[0])
+    sumFitness = sum(list(map(extractFitness, pop[1:])))
+    maxFitness = extractFitness(max(pop[1:], key=extractFitness))
+    weights = [(maxFitness - x[1])/(sumFitness) for x in pop[1:]]
+    bests.append(random.choices(pop[1:], weights=weights, k=int(len(pop[1:])/2)))
+    return(bests)
+
 if __name__ == "__main__":
     # Creation de la solution
     CS = createSol()
@@ -122,55 +131,9 @@ if __name__ == "__main__":
         # Classement des meilleures solutions
         pop.sort(key=extractFitness)
 
-        # Sélection de la solution à jouer
-        # solutionAJouer = pop[0]
-
-        # Sélection des meilleurs 50%
-        # bests = pop[0:int(len(pop)/2)]
-
-        # Sélection du meilleur et reste aléatoire
-        bests = []
-        bests.append(pop[0])
-        while(len(bests) < POPULATION):
-            bests.append(pop[random.randrange(len(pop))])
-
-        # Mutation des meilleurs
-        mutated = list(map(mutation, bests))
-
-        # Croisement des meilleurs
-        crossbred = []
-        for i in range(len(mutated)):
-            if i+1 < len(mutated):
-                crossbred.append([croisement(mutated[i][0], mutated[i+1][0]), -1])
-            else:
-                crossbred.append([croisement(mutated[i][0], mutated[0][0]), -1])
-
-        # Remplacement de la population
-        pop = [*mutated, *crossbred]
-
-        # Réévaluation
-        for i in range(len(pop)):
-            pop[i][1] = fitness(pop[i][0], solutionsJouees, scoreReel)
-
-        # Classement des meilleures solutions
-        pop.sort(key=extractFitness)
-
-        # Sélection de la solution à jouer
-        solutionAJouer = pop[0]
-
-        if(solutionAJouer[1] > 3):
-            k+=1
-            continue
-
-        print(solutionAJouer)
-        
-        # Jeu de la solution choisie
-        scoreReel = score(*compare(CS, solutionAJouer[0]))
-        solutionsJouees.append(solutionAJouer[0])
-        solutionTrouvee = isEqual(CS, solutionAJouer[0])
-        # solutionTrouvee = scoreReel == SCORE_MAX
-
+        bests = selection(pop)
         k += 1
+
     if solutionTrouvee:
         print(f'Trouvé en {len(solutionsJouees)} tours')
     else:
