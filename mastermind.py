@@ -1,6 +1,7 @@
 import random
 COEF_P = 3
 COEF_M = 2
+TAUX_MUTATION = 3
 SCORE_MAX = 4 * COEF_P
 LIMITE_TOUR = 2
 POPULATION = 10
@@ -53,15 +54,37 @@ def fitness(c, solutionsJouees, scoreReel):
 
 def mutation(sol):
     c = sol[0]
-    while(True):
-        mute = random.randrange(8)
-        position = random.randrange(4)
-        if(c[position] != mute):
-            c[position] = mute
-            return [c, -1]
+    chance = random.randrange(100)
+    if(chance < TAUX_MUTATION):
+        while(True):
+            mute = random.randrange(8)
+            position = random.randrange(4)
+            if(c[position] != mute):
+                c[position] = mute
+                return [c, -1]
+    return sol
+
+def mutePop(pop):
+    newPop = []
+    for i in range(len(pop)):
+        newPop.append(muation(pop[i]))
+    return newPop
 
 def croisement(c1, c2):
-    return [c1[0], c2[1], c1[2], c2[3]]
+    chance = random.randrange(3)
+    if(chance = 0):
+        return(c1[0], c1[1], c1[2], c2[3])
+    if(chance = 1):
+        return(c1[0], c1[1], c2[2], c2[3])
+    if(chance = 2):
+        return(c1[0], c2[1], c2[2], c2[3])
+
+def crossPop(pop):
+    newPop = []
+    newPop.append(pop[0])
+    while(len(newPop) < POPULATION)
+        newPop.append(pop[random.randrange(POPULATION)][0], pop[random.randrange(POPULATION)][0])
+    return newPop
 
 def extractFitness(s):
     return s[1]
