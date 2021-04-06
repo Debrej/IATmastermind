@@ -1,9 +1,9 @@
 import random
-COEF_P = 4
-COEF_M = 1
+COEF_P = 3
+COEF_M = 2
 SCORE_MAX = 4 * COEF_P
 LIMITE_TOUR = 50
-POPULATION = 200
+POPULATION = 100
 
 def createSol():
     sol = []
@@ -65,6 +65,12 @@ def croisement(c1, c2):
 
 def extractFitness(s):
     return s[1]
+
+def isEqual(c1, c2):
+    for i in range(4):
+        if (c1[i] != c2[i]):
+            return False
+    return True
 
 if __name__ == "__main__":
     # Creation de la solution
@@ -138,7 +144,8 @@ if __name__ == "__main__":
         # Jeu de la solution choisie
         scoreReel = score(*compare(CS, solutionAJouer[0]))
         solutionsJouees.append(solutionAJouer[0])
-        solutionTrouvee = scoreReel == SCORE_MAX
+        solutionTrouvee = isEqual(CS, solutionAJouer[0])
+        # solutionTrouvee = scoreReel == SCORE_MAX
 
         k += 1
     if solutionTrouvee:
@@ -146,3 +153,4 @@ if __name__ == "__main__":
     else:
         print(f'Pas trouvé la solution après {LIMITE_TOUR} tours')
     print(f'Dernière solution jouée : {solutionsJouees[-1:]}, solution : {CS}')
+    print(solutionsJouees)
