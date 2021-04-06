@@ -1,11 +1,13 @@
 import random
+import sys
+
 COEF_M = 1
-RATIO_M_P = 3
+RATIO_M_P = int(sys.argv[1])
 COEF_P = COEF_M*RATIO_M_P
-TAUX_MUTATION = 5
+TAUX_MUTATION = int(sys.argv[2])
 SCORE_MAX = 4 * COEF_P
-LIMITE_TOUR = 20
-POPULATION = 50
+LIMITE_TOUR = int(sys.argv[3])
+POPULATION = int(sys.argv[4])
 
 def createSol():
     sol = []
@@ -42,15 +44,17 @@ def compare(c1, c2):
             m+=1
     return (p,m)
 
-def eval(c, cj, scoreReel):
+def eval(c, cj, cs):
     (pVirtuel, mVirtuel) = compare(c,cj)
     scoreVirtuel = score(pVirtuel, mVirtuel)
+    (pReel, mReel) = compare(cj, cs)
+    scoreReel = score(pReel, mReel)
     return abs(scoreReel - scoreVirtuel)
 
-def fitness(c, solutionsJouees, scoreReel):
+def fitness(c, solutionsJouees, cs):
     fit = 0
     for j, solution in enumerate(solutionsJouees):
-        fit += eval(c, solution, scoreReel)
+        fit += eval(c, solution, cs)
     return fit/len(solutionsJouees)
 
 def mutation(sol):
@@ -128,7 +132,7 @@ if __name__ == "__main__":
     k = 0
 
     for i in range(len(pop)):
-            pop[i][1] = fitness(pop[i][0], solutionsJouees, scoreReel)
+            pop[i][1] = fitness(pop[i][0], solutionsJouees, CS)
 
     while not solutionTrouvee and k < LIMITE_TOUR:
         pop.sort(key=extractFitness)
@@ -138,18 +142,21 @@ if __name__ == "__main__":
         pop = mutePop(pop)
         # Evaluation
         for i in range(len(pop)):
-            pop[i][1] = fitness(pop[i][0], solutionsJouees, scoreReel)
+            pop[i][1] = fitness(pop[i][0], solutionsJouees, CS)
         pop.sort(key=extractFitness)
         solutionsJouees.append(pop[0][0])
-        print(f'solution proposée : {pop[0]}')
+        # print(f'solution proposée : {pop[0]}')
+        solutionTrouvee = isEqual(pop[0][0], CS)
+
+        for i in range(len(pop)):
+            pop[i][1] = fitness(pop[i][0], solutionsJouees, CS)
 
         k += 1
+    
+    # if solutionTrouvee:
+        # print(f"Solution trouvée : {solutionsJouees[-1:]} VS {CS} en {len(solutionsJouees)} tours")
+    # else:
+        # print(f"Solution non trouvée : {solutionsJouees[-1:]} VS {CS} en {len(solutionsJouees)} tours")
 
-    if solutionTrouvee:
-        print(f'Trouvé en {len(solutionsJouees)} tours')
-        f.write(f'{len(solutionsJouees)},{solutionsJouees[-1:]},true')
-    else:
-        print(f'Pas trouvé la solution après {LIMITE_TOUR} tours')
-        f.write(f'{len(solutionsJouees)},{solutionsJouees[-1:]},false')
-    print(f'Dernière solution jouée : {solutionsJouees[-1:]}, solution : {CS}')
+    f.write(f'{len(solutionsJouees)},{solutionTrouvee},{RATIO_M_P},{TAUX_MUTATION},{POPULATION},{LIMITE_TOUR}\n')
     f.close()
