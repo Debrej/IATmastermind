@@ -111,17 +111,17 @@ def selection(pop):
 
 if __name__ == "__main__":
 
-    f = open("res.csv", "a+")
+    f = open(sys.argv[5], "a+")
 
     # Creation de la solution
     CS = createSol()
-    print(f'Solution : {CS}')
+    # print(f'Solution : {CS}')
     solutionTrouvee = False
 
     # Creation de la solution initiale
     CI = createSol()
     scoreReel = score(*compare(CS, CI))
-    print(f'Solution initiale : {CI}, score : {scoreReel}')
+    # print(f'Solution initiale : {CI}, score : {scoreReel}')
 
     # Ajout de la solution aux solutions jouées
     solutionsJouees = [CI]
@@ -158,5 +158,5 @@ if __name__ == "__main__":
     # else:
         # print(f"Solution non trouvée : {solutionsJouees[-1:]} VS {CS} en {len(solutionsJouees)} tours")
 
-    f.write(f'{len(solutionsJouees)},{solutionTrouvee},{RATIO_M_P},{TAUX_MUTATION},{POPULATION},{LIMITE_TOUR}\n')
+    f.write(f'{len(solutionsJouees)},{solutionTrouvee},"{RATIO_M_P}",{TAUX_MUTATION},{POPULATION},{LIMITE_TOUR}\n')
     f.close()
