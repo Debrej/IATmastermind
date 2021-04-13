@@ -4,7 +4,9 @@ library(readr)
 
 df = read_csv("eval.csv", col_types=cols(ratio=col_factor()))
 df_factors = read_csv("eval.csv", col_types=cols(ratio=col_factor(), pop=col_factor(), taux=col_factor()))
-df_tours = read_csv("evalFine.csv", col_types=cols(ratio=col_factor(), pop=col_factor(), taux=col_factor()))
+df_tours_30 = read_csv("evalFine30.csv", col_types=cols(ratio=col_factor(), pop=col_factor(), taux=col_factor()))
+df_tours_15 = read_csv("evalFine15.csv", col_types=cols(ratio=col_factor(), pop=col_factor(), taux=col_factor()))
+df_tours_5 = read_csv("evalFine5.csv", col_types=cols(ratio=col_factor(), pop=col_factor(), taux=col_factor()))
 
 NB_RATIO = 5
 NB_POP = 3
@@ -64,26 +66,36 @@ ggplot(data = df_ratio_pop, mapping = aes(x = pop, y = pct)) +
   theme_minimal() +
   ggtitle("Réussite ratio par rapport à pop")
 
+ggsave("ratio_pop.png")
+
 ggplot(data = df_ratio_taux, mapping = aes(x = taux, y = pct)) +
   geom_point(aes(color = ratio)) +
   geom_smooth(aes(linetype = ratio, color = ratio))+
   theme_minimal() +
   ggtitle("Réussite ratio par rapport à taux")
 
+ggsave("ratio_taux.png")
+
 ggplot(data = df_ratio, mapping = aes(x = ratio, y=pct)) +
   geom_col(aes(fill = ratio)) +
   theme_minimal() +
   ggtitle("Réussite par rapport à ratio")
+
+ggsave("reussite_ratio.png")
 
 ggplot(data = df_taux, mapping = aes(x = taux, y=pct)) +
   geom_col(aes(fill = taux)) +
   theme_minimal() +
   ggtitle("Réussite par rapport à taux")
 
+ggsave("reussite_taux.png")
+
 ggplot(data = df_pop, mapping = aes(x = pop, y=pct)) +
   geom_col(aes(fill = pop)) +
   theme_minimal()+
   ggtitle("Réussite par rapport à pop")
+
+ggsave("reussite_pop.png")
 
 ggplot(data = df_ratio_taux_pop, mapping = aes(x = pop, y = taux)) +
   geom_jitter(aes(shape = ratio, size = pct, color = pct), width = 0.5, height = 0.5) +
@@ -91,8 +103,32 @@ ggplot(data = df_ratio_taux_pop, mapping = aes(x = pop, y = taux)) +
   theme_minimal()+
   ggtitle("Réussite par rapport à ratio, pop et taux")
 
-ggplot(data = df_tours, mapping = aes(x = nbTours)) +
-  geom_density() +
-  geom_vline(aes(xintercept = 8, color = "red", alpha = 0.8, linetype = "dotted"), show.legend = FALSE) +
+ggsave("reussite_ratio_pop_taux.png")
+
+ggplot() +
+  geom_density(data = df_tours_15, mapping = aes(x = nbTours), color = "blue", show.legend = FALSE) +
+  geom_density(data = df_tours_5, mapping = aes(x = nbTours), color = "green", show.legend = FALSE) +
+  geom_density(data = df_tours_30, mapping = aes(x = nbTours), color = "purple", show.legend = FALSE) +
+  geom_vline(aes(xintercept = 8), color = "red", alpha = 0.8, linetype = "dotted", show.legend = FALSE) +
   theme_minimal() +
-  labs(title = "Répartition du nombre de tours requis", subtitle = "ratio du score = 3, pop = 200, taux de mutation = 5%")
+  labs(title = "Répartition du nombre de tours requis", subtitle = "en violet, taux = 30%, en bleu, taux = 15%, en vert, taux = 5%")
+
+ggsave("rep_nb_tours_density.png")
+
+ggplot() +
+  geom_count(data = filter(df_tours_30, found == "TRUE"), mapping = aes(x = taux, y = nbTours), color = "purple", show.legend = FALSE) +
+  geom_count(data = filter(df_tours_15, found == "TRUE"), mapping = aes(x = taux,y = nbTours), color = "blue", show.legend = FALSE) +
+  geom_count(data = filter(df_tours_5, found == "TRUE"), mapping = aes(x = taux, y = nbTours), color = "green", show.legend = FALSE) +
+  theme_minimal() +
+  labs(title = "Répartition du nombre de tours requis", subtitle = "en violet, taux = 30%, en bleu, taux = 15%, en vert, taux = 5%")
+
+ggsave("rep_nb_tours_diff.png")
+
+ggplot(mapping = aes(x = taux, y = nbTours)) +
+  geom_violin(data = filter(df_tours_30, found == "TRUE"), fill = "purple", color = "purple", show.legend = FALSE) +
+  geom_violin(data = filter(df_tours_15, found == "TRUE"), fill = "blue", color = "blue", show.legend = FALSE) +
+  geom_violin(data = filter(df_tours_5, found == "TRUE"), fill = "green", color = "green", show.legend = FALSE) +
+  theme_minimal() +
+  labs(title = "Répartition du nombre de tours requis", subtitle = "en violet, taux = 30%, en bleu, taux = 15%, en vert, taux = 5%")
+
+ggsave("rep_nb_tours_diff.png")
